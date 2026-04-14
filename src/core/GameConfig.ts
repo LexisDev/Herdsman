@@ -33,10 +33,14 @@ export const GameConfig = {
     maxCount: 12,
     radius: 10,
     color: 0xffffff,
+    speed: 230,
     minX: 50,
     maxX: 800,
     minY: 100,
     maxY: 500,
+    pickupDistance: 55,
+    followSpacing: 34,
+    maxGroupSize: 5,
   },
 
   yard: {

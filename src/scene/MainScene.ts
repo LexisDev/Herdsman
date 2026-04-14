@@ -115,6 +115,12 @@ export class MainScene {
       const animal = this.animals[index];
       const animalView = this.animalViews[index];
 
+      animalView.visible = !animal.isDelivered;
+
+      if (animal.isDelivered) {
+        continue;
+      }
+
       animalView.draw(
         animal.x,
         animal.y,

@@ -5,6 +5,8 @@ import { MainScene } from '../scene/MainScene';
 import { RenderSystem } from '../systems/RenderSystem';
 import { InputSystem } from '../systems/InputSystem';
 import { MovementSystem } from '../systems/MovementSystem';
+import { FollowSystem } from '../systems/FollowSystem';
+import { DeliverySystem } from '../systems/DeliverySystem';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
@@ -34,6 +36,12 @@ export class Game {
 
   private readonly inputSystem = new InputSystem(this.hero);
   private readonly movementSystem = new MovementSystem(this.hero);
+  private readonly followSystem = new FollowSystem(this.hero, this.animals);
+  private readonly deliverySystem = new DeliverySystem(
+    this.animals,
+    this.yard,
+    this.score,
+  );
 
   private readonly scene: MainScene;
 
@@ -74,6 +82,8 @@ export class Game {
 
   private registerSystems(): void {
     this.loop.register(this.movementSystem);
+    this.loop.register(this.followSystem);
+    this.loop.register(this.deliverySystem);
 
     this.loop.register(
       new RenderSystem(
@@ -105,6 +115,7 @@ export class Game {
           this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
           this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
           GameConfig.animals.radius,
+          GameConfig.animals.speed,
         ),
       );
     }
