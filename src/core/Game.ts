@@ -3,11 +3,19 @@ import { GameConfig } from './GameConfig';
 import { GameLoop } from './GameLoop';
 import { MainScene } from '../scene/MainScene';
 import { RenderSystem } from '../systems/RenderSystem';
+import { Hero } from '../entities/Hero';
 
 export class Game {
   private readonly app = new Application();
   private readonly loop = new GameLoop();
-  private readonly scene = new MainScene();
+
+  private readonly hero = new Hero(
+    GameConfig.hero.x,
+    GameConfig.hero.y,
+    GameConfig.hero.radius,
+  );
+
+  private readonly scene = new MainScene(this.hero);
 
   constructor(private readonly rootElement: HTMLElement) {}
 

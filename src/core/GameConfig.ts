@@ -9,4 +9,11 @@ export const GameConfig = {
     fontSize: 42,
     fontWeight: 'bold',
   },
+
+  hero: {
+    x: 200,
+    y: 180,
+    radius: 18,
+    color: 0xff3b30,
+  },
 } as const;
