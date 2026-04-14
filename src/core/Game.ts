@@ -7,6 +7,7 @@ import { InputSystem } from '../systems/InputSystem';
 import { MovementSystem } from '../systems/MovementSystem';
 import { FollowSystem } from '../systems/FollowSystem';
 import { DeliverySystem } from '../systems/DeliverySystem';
+import { RespawnSystem } from '../systems/RespawnSystem';
 import { SoundSystem } from '../systems/SoundSystem';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
@@ -52,6 +53,11 @@ export class Game {
     () => this.soundSystem.playDelivery(),
   );
 
+  private readonly respawnSystem = new RespawnSystem(
+    this.animals,
+    (min, max) => this.randomInt(min, max),
+  );
+
   private readonly scene: MainScene;
 
   constructor(private readonly rootElement: HTMLElement) {
@@ -93,6 +99,7 @@ export class Game {
     this.loop.register(this.movementSystem);
     this.loop.register(this.followSystem);
     this.loop.register(this.deliverySystem);
+    this.loop.register(this.respawnSystem);
 
     this.loop.register(
       new RenderSystem(

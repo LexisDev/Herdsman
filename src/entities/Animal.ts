@@ -24,4 +24,12 @@ export class Animal {
     this.isDelivered = true;
     this.stopFollowing();
   }
+
+  public reset(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
+    this.isDelivered = false;
+    this.isFollowing = false;
+    this.followIndex = -1;
+  }
 }
