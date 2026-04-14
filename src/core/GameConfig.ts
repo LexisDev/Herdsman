@@ -27,4 +27,12 @@ export const GameConfig = {
     minY: 100,
     maxY: 500,
   },
+
+  yard: {
+    x: 600,
+    y: 350,
+    width: 120,
+    height: 80,
+    color: 0xffd60a,
+  },
 } as const;
