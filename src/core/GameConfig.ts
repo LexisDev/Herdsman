@@ -16,4 +16,15 @@ export const GameConfig = {
     radius: 18,
     color: 0xff3b30,
   },
+
+  animals: {
+    minCount: 5,
+    maxCount: 12,
+    radius: 10,
+    color: 0xffffff,
+    minX: 50,
+    maxX: 800,
+    minY: 100,
+    maxY: 500,
+  },
 } as const;

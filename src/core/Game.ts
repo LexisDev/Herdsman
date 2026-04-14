@@ -4,6 +4,7 @@ import { GameLoop } from './GameLoop';
 import { MainScene } from '../scene/MainScene';
 import { RenderSystem } from '../systems/RenderSystem';
 import { Hero } from '../entities/Hero';
+import { Animal } from '../entities/Animal';
 
 export class Game {
   private readonly app = new Application();
@@ -15,9 +16,13 @@ export class Game {
     GameConfig.hero.radius,
   );
 
-  private readonly scene = new MainScene(this.hero);
+  private readonly animals: Animal[] = [];
+  private readonly scene: MainScene;
 
-  constructor(private readonly rootElement: HTMLElement) {}
+  constructor(private readonly rootElement: HTMLElement) {
+    this.createAnimals();
+    this.scene = new MainScene(this.hero, this.animals);
+  }
 
   public async init(): Promise<void> {
     await this.app.init({
@@ -50,5 +55,26 @@ export class Game {
       this.loop.update(deltaTime);
       this.scene.update(deltaTime);
     });
+  }
+
+  private createAnimals(): void {
+    const count = this.randomInt(
+      GameConfig.animals.minCount,
+      GameConfig.animals.maxCount,
+    );
+
+    for (let index = 0; index < count; index += 1) {
+      this.animals.push(
+        new Animal(
+          this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
+          this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
+          GameConfig.animals.radius,
+        ),
+      );
+    }
+  }
+
+  private randomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }
