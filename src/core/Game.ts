@@ -3,6 +3,8 @@ import { GameConfig } from './GameConfig';
 import { GameLoop } from './GameLoop';
 import { MainScene } from '../scene/MainScene';
 import { RenderSystem } from '../systems/RenderSystem';
+import { InputSystem } from '../systems/InputSystem';
+import { MovementSystem } from '../systems/MovementSystem';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
@@ -16,6 +18,7 @@ export class Game {
     GameConfig.hero.x,
     GameConfig.hero.y,
     GameConfig.hero.radius,
+    GameConfig.hero.speed,
   );
 
   private readonly animals: Animal[] = [];
@@ -28,6 +31,9 @@ export class Game {
   );
 
   private readonly score = new Score(0);
+
+  private readonly inputSystem = new InputSystem(this.hero);
+  private readonly movementSystem = new MovementSystem(this.hero);
 
   private readonly scene: MainScene;
 
@@ -51,11 +57,24 @@ export class Game {
     this.rootElement.appendChild(this.app.canvas);
     this.app.stage.addChild(this.scene.root);
 
+    this.bindInput();
     this.registerSystems();
     this.startLoop();
   }
 
+  private bindInput(): void {
+    this.app.stage.eventMode = 'static';
+
+    this.app.stage.on('pointerdown', (event) => {
+      const position = event.getLocalPosition(this.app.stage);
+
+      this.inputSystem.moveHeroTo(position.x, position.y);
+    });
+  }
+
   private registerSystems(): void {
+    this.loop.register(this.movementSystem);
+
     this.loop.register(
       new RenderSystem(
         this.scene,

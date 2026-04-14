@@ -25,6 +25,7 @@ export const GameConfig = {
     y: 180,
     radius: 18,
     color: 0xff3b30,
+    speed: 280,
   },
 
   animals: {
