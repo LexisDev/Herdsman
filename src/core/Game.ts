@@ -7,6 +7,7 @@ import { InputSystem } from '../systems/InputSystem';
 import { MovementSystem } from '../systems/MovementSystem';
 import { FollowSystem } from '../systems/FollowSystem';
 import { DeliverySystem } from '../systems/DeliverySystem';
+import { SoundSystem } from '../systems/SoundSystem';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
@@ -36,11 +37,19 @@ export class Game {
 
   private readonly inputSystem = new InputSystem(this.hero);
   private readonly movementSystem = new MovementSystem(this.hero);
-  private readonly followSystem = new FollowSystem(this.hero, this.animals);
+  private readonly soundSystem = new SoundSystem();
+
+  private readonly followSystem = new FollowSystem(
+    this.hero,
+    this.animals,
+    () => this.soundSystem.playPickup(),
+  );
+
   private readonly deliverySystem = new DeliverySystem(
     this.animals,
     this.yard,
     this.score,
+    () => this.soundSystem.playDelivery(),
   );
 
   private readonly scene: MainScene;

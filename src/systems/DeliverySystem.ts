@@ -8,9 +8,12 @@ export class DeliverySystem implements Updatable {
     private readonly animals: Animal[],
     private readonly yard: Yard,
     private readonly score: Score,
+    private readonly onAnimalDelivered?: () => void,
   ) {}
 
   public update(_deltaTime: number): void {
+    let deliveredCount = 0;
+
     for (const animal of this.animals) {
       if (!animal.isFollowing || animal.isDelivered) {
         continue;
@@ -19,6 +22,13 @@ export class DeliverySystem implements Updatable {
       if (this.yard.contains(animal.x, animal.y)) {
         animal.markDelivered();
         this.score.increment();
+        deliveredCount += 1;
+      }
+    }
+
+    if (deliveredCount > 0) {
+      for (let i = 0; i < deliveredCount; i += 1) {
+        this.onAnimalDelivered?.();
       }
     }
 

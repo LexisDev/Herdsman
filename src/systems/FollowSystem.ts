@@ -7,6 +7,7 @@ export class FollowSystem implements Updatable {
   constructor(
     private readonly hero: Hero,
     private readonly animals: Animal[],
+    private readonly onAnimalPicked?: () => void,
   ) {}
 
   public update(deltaTime: number): void {
@@ -38,6 +39,7 @@ export class FollowSystem implements Updatable {
         }
 
         animal.startFollowing(currentFollowers.length);
+        this.onAnimalPicked?.();
       }
     }
   }
