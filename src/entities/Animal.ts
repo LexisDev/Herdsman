@@ -3,6 +3,10 @@ export class Animal {
   public isDelivered = false;
   public followIndex = -1;
 
+  public patrolTargetX: number | null = null;
+  public patrolTargetY: number | null = null;
+  public patrolWaitTime = 0;
+
   constructor(
     public x: number,
     public y: number,
@@ -13,6 +17,9 @@ export class Animal {
   public startFollowing(index: number): void {
     this.isFollowing = true;
     this.followIndex = index;
+    this.patrolTargetX = null;
+    this.patrolTargetY = null;
+    this.patrolWaitTime = 0;
   }
 
   public stopFollowing(): void {
@@ -31,5 +38,18 @@ export class Animal {
     this.isDelivered = false;
     this.isFollowing = false;
     this.followIndex = -1;
+    this.patrolTargetX = null;
+    this.patrolTargetY = null;
+    this.patrolWaitTime = 0;
+  }
+
+  public setPatrolTarget(x: number, y: number): void {
+    this.patrolTargetX = x;
+    this.patrolTargetY = y;
+  }
+
+  public clearPatrolTarget(): void {
+    this.patrolTargetX = null;
+    this.patrolTargetY = null;
   }
 }

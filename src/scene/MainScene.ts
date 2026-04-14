@@ -43,8 +43,8 @@ export class MainScene {
     this.yardView = new YardView();
     this.scoreView = new ScoreView(GameConfig.score.style);
 
-    this.createAnimalViews();
     this.buildScene();
+    this.createMissingAnimalViews();
     this.initializeStaticViews();
   }
 
@@ -55,6 +55,7 @@ export class MainScene {
   }
 
   public render(): void {
+    this.createMissingAnimalViews();
     this.syncHero();
     this.syncAnimals();
     this.syncScore();
@@ -68,23 +69,20 @@ export class MainScene {
     this.root.addChild(this.fieldView);
     this.root.addChild(this.yardView);
     this.root.addChild(this.lightningView);
-
-    for (const animalView of this.animalViews) {
-      this.root.addChild(animalView);
-    }
-
     this.root.addChild(this.heroView);
     this.root.addChild(this.titleView);
     this.root.addChild(this.scoreView);
   }
 
-  private createAnimalViews(): void {
-    for (const _animal of this.animals) {
+  private createMissingAnimalViews(): void {
+    while (this.animalViews.length < this.animals.length) {
       const animalView = new AnimalView(
         GameConfig.animals.radius,
         GameConfig.animals.color,
       );
+
       this.animalViews.push(animalView);
+      this.root.addChild(animalView);
     }
   }
 

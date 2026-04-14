@@ -41,6 +41,17 @@ export const GameConfig = {
     pickupDistance: 55,
     followSpacing: 34,
     maxGroupSize: 5,
+
+    spawnIntervalMin: 2.5,
+    spawnIntervalMax: 5.5,
+    maxAliveOnField: 20,
+
+    patrolSpeedMultiplier: 0.15,
+    patrolWaitMin: 2.4,
+    patrolWaitMax: 7.4,
+    
+    spawnIdleMin: 1.5,
+    spawnIdleMax: 3.5,
   },
 
   yard: {

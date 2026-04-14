@@ -8,6 +8,8 @@ import { MovementSystem } from '../systems/MovementSystem';
 import { FollowSystem } from '../systems/FollowSystem';
 import { DeliverySystem } from '../systems/DeliverySystem';
 import { RespawnSystem } from '../systems/RespawnSystem';
+import { SpawnSystem } from '../systems/SpawnSystem';
+import { PatrolSystem } from '../systems/PatrolSystem';
 import { SoundSystem } from '../systems/SoundSystem';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
@@ -58,6 +60,18 @@ export class Game {
     (min, max) => this.randomInt(min, max),
   );
 
+  private readonly spawnSystem = new SpawnSystem(
+    this.animals,
+    (min, max) => this.randomInt(min, max),
+    (min, max) => this.randomFloat(min, max),
+  );
+
+  private readonly patrolSystem = new PatrolSystem(
+    this.animals,
+    (min, max) => this.randomInt(min, max),
+    (min, max) => this.randomFloat(min, max),
+  );
+
   private readonly scene: MainScene;
 
   constructor(private readonly rootElement: HTMLElement) {
@@ -103,9 +117,11 @@ export class Game {
 
   private registerSystems(): void {
     this.loop.register(this.movementSystem);
+    this.loop.register(this.patrolSystem);
     this.loop.register(this.followSystem);
     this.loop.register(this.deliverySystem);
     this.loop.register(this.respawnSystem);
+    this.loop.register(this.spawnSystem);
     this.loop.register(new RenderSystem(this.scene));
   }
 
@@ -125,18 +141,31 @@ export class Game {
     );
 
     for (let i = 0; i < count; i++) {
-      this.animals.push(
-        new Animal(
-          this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
-          this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
-          GameConfig.animals.radius,
-          GameConfig.animals.speed,
-        ),
-      );
+      this.animals.push(this.createAnimal());
     }
+  }
+
+  private createAnimal(): Animal {
+    const animal = new Animal(
+      this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
+      this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
+      GameConfig.animals.radius,
+      GameConfig.animals.speed,
+    );
+
+    animal.patrolWaitTime = this.randomFloat(
+      GameConfig.animals.spawnIdleMin,
+      GameConfig.animals.spawnIdleMax,
+    );
+
+    return animal;
   }
 
   private randomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  private randomFloat(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
   }
 }
