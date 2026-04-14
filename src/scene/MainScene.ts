@@ -5,11 +5,13 @@ import { LightningView } from '../ui/views/LightningView';
 import { HeroView } from '../ui/views/HeroView';
 import { AnimalView } from '../ui/views/AnimalView';
 import { YardView } from '../ui/views/YardView';
+import { ScoreView } from '../ui/hud/ScoreView';
 
 import { GameConfig } from '../core/GameConfig';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
+import { Score } from '../entities/Score';
 
 export class MainScene {
   public readonly root = new Container();
@@ -19,12 +21,14 @@ export class MainScene {
   private readonly lightningView: LightningView;
   private readonly heroView: HeroView;
   private readonly yardView: YardView;
+  private readonly scoreView: ScoreView;
   private readonly animalViews: AnimalView[] = [];
 
   constructor(
     private readonly hero: Hero,
     private readonly animals: Animal[],
     private readonly yard: Yard,
+    private readonly score: Score,
   ) {
     this.fieldView = new FieldView();
     this.titleView = new TitleView(
@@ -34,6 +38,7 @@ export class MainScene {
     this.lightningView = new LightningView(3);
     this.heroView = new HeroView();
     this.yardView = new YardView();
+    this.scoreView = new ScoreView(GameConfig.score.style);
 
     this.buildScene();
     this.createAnimalViews();
@@ -43,8 +48,10 @@ export class MainScene {
     this.drawField(width, height);
     this.drawYard();
     this.layoutTitle(width);
+    this.layoutScore();
     this.drawHero();
     this.drawAnimals();
+    this.drawScore();
   }
 
   public update(deltaTime: number): void {
@@ -57,6 +64,7 @@ export class MainScene {
     this.root.addChild(this.lightningView);
     this.root.addChild(this.heroView);
     this.root.addChild(this.titleView);
+    this.root.addChild(this.scoreView);
   }
 
   private createAnimalViews(): void {
@@ -86,6 +94,13 @@ export class MainScene {
     this.lightningView.setLayout(width / 2, GameConfig.titleY + 8);
   }
 
+  private layoutScore(): void {
+    this.scoreView.setPosition(
+      GameConfig.score.x,
+      GameConfig.score.y,
+    );
+  }
+
   private drawHero(): void {
     this.heroView.draw(
       this.hero.x,
@@ -107,5 +122,9 @@ export class MainScene {
         GameConfig.animals.color,
       );
     }
+  }
+
+  private drawScore(): void {
+    this.scoreView.setScore(this.score.value);
   }
 }

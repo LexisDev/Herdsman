@@ -10,6 +10,16 @@ export const GameConfig = {
     fontWeight: 'bold',
   },
 
+  score: {
+    x: 20,
+    y: 20,
+    style: {
+      fill: 0xffffff,
+      fontSize: 28,
+      fontWeight: 'bold',
+    },
+  },
+
   hero: {
     x: 200,
     y: 180,
