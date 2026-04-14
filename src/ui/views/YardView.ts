@@ -1,19 +1,25 @@
 import { Graphics } from 'pixi.js';
 
 export class YardView extends Graphics {
-  constructor() {
-    super();
-  }
+  private initialized = false;
 
-  public draw(
+  public drawOnce(
     x: number,
     y: number,
     width: number,
     height: number,
     color: number,
   ): void {
-    this.clear();
-    this.rect(x, y, width, height);
+    if (this.initialized) {
+      return;
+    }
+
+    this.initialized = true;
+
+    this.rect(0, 0, width, height);
     this.fill(color);
+
+    this.x = x;
+    this.y = y;
   }
 }

@@ -1,6 +1,8 @@
 import { Text, TextStyle } from 'pixi.js';
 
 export class ScoreView extends Text {
+  private currentScore = Number.NaN;
+
   constructor(style: Partial<TextStyle>) {
     super({
       text: 'Score: 0',
@@ -10,7 +12,12 @@ export class ScoreView extends Text {
     this.anchor.set(0, 0);
   }
 
-  public setScore(score: number): void {
+  public syncScore(score: number): void {
+    if (this.currentScore === score) {
+      return;
+    }
+
+    this.currentScore = score;
     this.text = `Score: ${score}`;
   }
 

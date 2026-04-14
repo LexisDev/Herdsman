@@ -36,22 +36,28 @@ export class MainScene {
       GameConfig.titleStyle,
     );
     this.lightningView = new LightningView(3);
-    this.heroView = new HeroView();
+    this.heroView = new HeroView(
+      GameConfig.hero.radius,
+      GameConfig.hero.color,
+    );
     this.yardView = new YardView();
     this.scoreView = new ScoreView(GameConfig.score.style);
 
-    this.buildScene();
     this.createAnimalViews();
+    this.buildScene();
+    this.initializeStaticViews();
   }
 
   public resize(width: number, height: number): void {
-    this.drawField(width, height);
-    this.drawYard();
+    this.resizeField(width, height);
     this.layoutTitle(width);
     this.layoutScore();
-    this.drawHero();
-    this.drawAnimals();
-    this.drawScore();
+  }
+
+  public render(): void {
+    this.syncHero();
+    this.syncAnimals();
+    this.syncScore();
   }
 
   public update(deltaTime: number): void {
@@ -62,6 +68,11 @@ export class MainScene {
     this.root.addChild(this.fieldView);
     this.root.addChild(this.yardView);
     this.root.addChild(this.lightningView);
+
+    for (const animalView of this.animalViews) {
+      this.root.addChild(animalView);
+    }
+
     this.root.addChild(this.heroView);
     this.root.addChild(this.titleView);
     this.root.addChild(this.scoreView);
@@ -69,24 +80,26 @@ export class MainScene {
 
   private createAnimalViews(): void {
     for (const _animal of this.animals) {
-      const animalView = new AnimalView();
+      const animalView = new AnimalView(
+        GameConfig.animals.radius,
+        GameConfig.animals.color,
+      );
       this.animalViews.push(animalView);
-      this.root.addChild(animalView);
     }
   }
 
-  private drawField(width: number, height: number): void {
-    this.fieldView.draw(width, height, GameConfig.fieldColor);
-  }
-
-  private drawYard(): void {
-    this.yardView.draw(
+  private initializeStaticViews(): void {
+    this.yardView.drawOnce(
       this.yard.x,
       this.yard.y,
       this.yard.width,
       this.yard.height,
       GameConfig.yard.color,
     );
+  }
+
+  private resizeField(width: number, height: number): void {
+    this.fieldView.resize(width, height, GameConfig.fieldColor);
   }
 
   private layoutTitle(width: number): void {
@@ -101,16 +114,11 @@ export class MainScene {
     );
   }
 
-  private drawHero(): void {
-    this.heroView.draw(
-      this.hero.x,
-      this.hero.y,
-      this.hero.radius,
-      GameConfig.hero.color,
-    );
+  private syncHero(): void {
+    this.heroView.syncPosition(this.hero.x, this.hero.y);
   }
 
-  private drawAnimals(): void {
+  private syncAnimals(): void {
     for (let index = 0; index < this.animals.length; index += 1) {
       const animal = this.animals[index];
       const animalView = this.animalViews[index];
@@ -121,16 +129,11 @@ export class MainScene {
         continue;
       }
 
-      animalView.draw(
-        animal.x,
-        animal.y,
-        animal.radius,
-        GameConfig.animals.color,
-      );
+      animalView.syncPosition(animal.x, animal.y);
     }
   }
 
-  private drawScore(): void {
-    this.scoreView.setScore(this.score.value);
+  private syncScore(): void {
+    this.scoreView.syncScore(this.score.value);
   }
 }

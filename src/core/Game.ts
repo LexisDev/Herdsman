@@ -80,17 +80,23 @@ export class Game {
     this.rootElement.appendChild(this.app.canvas);
     this.app.stage.addChild(this.scene.root);
 
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+
     this.bindInput();
     this.registerSystems();
     this.startLoop();
   }
+
+  private readonly handleResize = (): void => {
+    this.scene.resize(this.app.screen.width, this.app.screen.height);
+  };
 
   private bindInput(): void {
     this.app.stage.eventMode = 'static';
 
     this.app.stage.on('pointerdown', (event) => {
       const position = event.getLocalPosition(this.app.stage);
-
       this.inputSystem.moveHeroTo(position.x, position.y);
     });
   }
@@ -100,14 +106,7 @@ export class Game {
     this.loop.register(this.followSystem);
     this.loop.register(this.deliverySystem);
     this.loop.register(this.respawnSystem);
-
-    this.loop.register(
-      new RenderSystem(
-        this.scene,
-        () => this.app.screen.width,
-        () => this.app.screen.height,
-      ),
-    );
+    this.loop.register(new RenderSystem(this.scene));
   }
 
   private startLoop(): void {

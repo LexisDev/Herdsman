@@ -1,13 +1,15 @@
 import { Graphics } from 'pixi.js';
 
 export class AnimalView extends Graphics {
-  constructor() {
+  constructor(radius: number, color: number) {
     super();
+
+    this.circle(0, 0, radius);
+    this.fill(color);
   }
 
-  public draw(x: number, y: number, radius: number, color: number): void {
-    this.clear();
-    this.circle(x, y, radius);
-    this.fill(color);
+  public syncPosition(x: number, y: number): void {
+    this.x = x;
+    this.y = y;
   }
 }
