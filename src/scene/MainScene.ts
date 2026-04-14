@@ -1,6 +1,7 @@
 import { Container } from 'pixi.js';
 import { FieldView } from '../ui/views/FieldView';
 import { TitleView } from '../ui/views/TitleView';
+import { LightningView } from '../ui/views/LightningView';
 import { GameConfig } from '../core/GameConfig';
 
 export class MainScene {
@@ -8,6 +9,7 @@ export class MainScene {
 
   private readonly fieldView: FieldView;
   private readonly titleView: TitleView;
+  private readonly lightningView: LightningView;
 
   constructor() {
     this.fieldView = new FieldView();
@@ -15,13 +17,20 @@ export class MainScene {
       GameConfig.title,
       GameConfig.titleStyle,
     );
+    this.lightningView = new LightningView(3);
 
     this.root.addChild(this.fieldView);
+    this.root.addChild(this.lightningView);
     this.root.addChild(this.titleView);
   }
 
   public resize(width: number, height: number): void {
     this.fieldView.draw(width, height, GameConfig.fieldColor);
     this.titleView.centerHorizontally(width, GameConfig.titleY);
+    this.lightningView.setLayout(width / 2, GameConfig.titleY + 8);
+  }
+
+  public update(deltaTime: number): void {
+    this.lightningView.update(deltaTime);
   }
 }

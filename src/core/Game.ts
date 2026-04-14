@@ -38,7 +38,9 @@ export class Game {
   private startLoop(): void {
     this.app.ticker.add(() => {
       const deltaTime = this.app.ticker.deltaMS / 1000;
+
       this.loop.update(deltaTime);
+      this.scene.update(deltaTime);
     });
   }
 }
