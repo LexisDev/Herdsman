@@ -1,110 +1,16 @@
 import { Application } from 'pixi.js';
-import { GameConfig } from './GameConfig';
 import { GameLoop } from './GameLoop';
-import { MainScene } from '../scene/MainScene';
-import { RenderSystem } from '../systems/RenderSystem';
+import { GameConfig } from './GameConfig';
+import { GameFactory } from '../bootstrap/GameFactory';
 import { InputSystem } from '../systems/InputSystem';
-import { MovementSystem } from '../systems/MovementSystem';
-import { FollowSystem } from '../systems/FollowSystem';
-import { DeliverySystem } from '../systems/DeliverySystem';
-import { RespawnSystem } from '../systems/RespawnSystem';
-import { SpawnSystem } from '../systems/SpawnSystem';
-import { PatrolSystem } from '../systems/PatrolSystem';
-import { SoundSystem } from '../systems/SoundSystem';
-import { Hero } from '../entities/Hero';
-import { Animal } from '../entities/Animal';
-import { Yard } from '../entities/Yard';
-import { Score } from '../entities/Score';
-import { GameWorld } from '../world/GameWorld';
-import { AnimalFactory } from '../factories/AnimalFactory';
-import { EventBus } from '../events/EventBus';
 
 export class Game {
   private readonly app = new Application();
   private readonly loop = new GameLoop();
+  private readonly runtime = new GameFactory().create();
+  private readonly inputSystem = new InputSystem(this.runtime.world);
 
-  private readonly world: GameWorld;
-  private readonly animalFactory: AnimalFactory;
-  private readonly eventBus: EventBus;
-
-  private readonly inputSystem: InputSystem;
-  private readonly movementSystem: MovementSystem;
-  private readonly soundSystem: SoundSystem;
-  private readonly followSystem: FollowSystem;
-  private readonly deliverySystem: DeliverySystem;
-  private readonly respawnSystem: RespawnSystem;
-  private readonly spawnSystem: SpawnSystem;
-  private readonly patrolSystem: PatrolSystem;
-
-  private readonly scene: MainScene;
-
-  constructor(private readonly rootElement: HTMLElement) {
-    const hero = new Hero(
-      GameConfig.hero.x,
-      GameConfig.hero.y,
-      GameConfig.hero.radius,
-      GameConfig.hero.speed,
-    );
-
-    const animals: Animal[] = [];
-
-    const yard = new Yard(
-      GameConfig.yard.x,
-      GameConfig.yard.y,
-      GameConfig.yard.width,
-      GameConfig.yard.height,
-    );
-
-    const score = new Score(0);
-
-    this.world = new GameWorld(hero, animals, yard, score);
-    this.eventBus = new EventBus();
-
-    this.soundSystem = new SoundSystem(this.eventBus);
-    this.animalFactory = new AnimalFactory(
-      (min, max) => this.randomInt(min, max),
-      (min, max) => this.randomFloat(min, max),
-    );
-
-    this.inputSystem = new InputSystem(this.world);
-    this.movementSystem = new MovementSystem(this.world);
-
-    this.followSystem = new FollowSystem(
-      this.world,
-      this.eventBus,
-    );
-
-    this.deliverySystem = new DeliverySystem(
-      this.world,
-      this.eventBus,
-    );
-
-    this.respawnSystem = new RespawnSystem(
-      this.world,
-      (min, max) => this.randomInt(min, max),
-    );
-
-    this.spawnSystem = new SpawnSystem(
-      this.world,
-      this.animalFactory,
-      (min, max) => this.randomFloat(min, max),
-    );
-
-    this.patrolSystem = new PatrolSystem(
-      this.world,
-      (min, max) => this.randomInt(min, max),
-      (min, max) => this.randomFloat(min, max),
-    );
-
-    this.createAnimals();
-
-    this.scene = new MainScene(
-      this.world.hero,
-      this.world.animals,
-      this.world.yard,
-      this.world.score,
-    );
-  }
+  constructor(private readonly rootElement: HTMLElement) {}
 
   public async init(): Promise<void> {
     await this.app.init({
@@ -114,9 +20,9 @@ export class Game {
     });
 
     this.rootElement.appendChild(this.app.canvas);
-    this.app.stage.addChild(this.scene.root);
+    this.app.stage.addChild(this.runtime.scene.root);
 
-    this.soundSystem.register();
+    this.runtime.soundSystem.register();
 
     this.handleResize();
     window.addEventListener('resize', this.handleResize);
@@ -127,7 +33,7 @@ export class Game {
   }
 
   private readonly handleResize = (): void => {
-    this.scene.resize(this.app.screen.width, this.app.screen.height);
+    this.runtime.scene.resize(this.app.screen.width, this.app.screen.height);
   };
 
   private bindInput(): void {
@@ -140,40 +46,16 @@ export class Game {
   }
 
   private registerSystems(): void {
-    this.loop.register(this.movementSystem);
-    this.loop.register(this.patrolSystem);
-    this.loop.register(this.followSystem);
-    this.loop.register(this.deliverySystem);
-    this.loop.register(this.respawnSystem);
-    this.loop.register(this.spawnSystem);
-    this.loop.register(new RenderSystem(this.scene));
+    for (const system of this.runtime.systems) {
+      this.loop.register(system);
+    }
   }
 
   private startLoop(): void {
     this.app.ticker.add(() => {
       const deltaTime = this.app.ticker.deltaMS / 1000;
-
       this.loop.update(deltaTime);
-      this.scene.update(deltaTime);
+      this.runtime.scene.update(deltaTime);
     });
-  }
-
-  private createAnimals(): void {
-    const count = this.randomInt(
-      GameConfig.animals.minCount,
-      GameConfig.animals.maxCount,
-    );
-
-    for (let i = 0; i < count; i++) {
-      this.world.animals.push(this.animalFactory.create());
-    }
-  }
-
-  private randomInt(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  private randomFloat(min: number, max: number): number {
-    return Math.random() * (max - min) + min;
   }
 }
