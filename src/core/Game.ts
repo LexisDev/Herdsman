@@ -15,72 +15,88 @@ import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
 import { Score } from '../entities/Score';
+import { GameWorld } from '../world/GameWorld';
 
 export class Game {
   private readonly app = new Application();
   private readonly loop = new GameLoop();
 
-  private readonly hero = new Hero(
-    GameConfig.hero.x,
-    GameConfig.hero.y,
-    GameConfig.hero.radius,
-    GameConfig.hero.speed,
-  );
+  private readonly world: GameWorld;
 
-  private readonly animals: Animal[] = [];
-
-  private readonly yard = new Yard(
-    GameConfig.yard.x,
-    GameConfig.yard.y,
-    GameConfig.yard.width,
-    GameConfig.yard.height,
-  );
-
-  private readonly score = new Score(0);
-
-  private readonly inputSystem = new InputSystem(this.hero);
-  private readonly movementSystem = new MovementSystem(this.hero);
-  private readonly soundSystem = new SoundSystem();
-
-  private readonly followSystem = new FollowSystem(
-    this.hero,
-    this.animals,
-    () => this.soundSystem.playPickup(),
-  );
-
-  private readonly deliverySystem = new DeliverySystem(
-    this.animals,
-    this.yard,
-    this.score,
-    () => this.soundSystem.playDelivery(),
-  );
-
-  private readonly respawnSystem = new RespawnSystem(
-    this.animals,
-    (min, max) => this.randomInt(min, max),
-  );
-
-  private readonly spawnSystem = new SpawnSystem(
-    this.animals,
-    (min, max) => this.randomInt(min, max),
-    (min, max) => this.randomFloat(min, max),
-  );
-
-  private readonly patrolSystem = new PatrolSystem(
-    this.animals,
-    (min, max) => this.randomInt(min, max),
-    (min, max) => this.randomFloat(min, max),
-  );
+  private readonly inputSystem: InputSystem;
+  private readonly movementSystem: MovementSystem;
+  private readonly soundSystem: SoundSystem;
+  private readonly followSystem: FollowSystem;
+  private readonly deliverySystem: DeliverySystem;
+  private readonly respawnSystem: RespawnSystem;
+  private readonly spawnSystem: SpawnSystem;
+  private readonly patrolSystem: PatrolSystem;
 
   private readonly scene: MainScene;
 
   constructor(private readonly rootElement: HTMLElement) {
+    const hero = new Hero(
+      GameConfig.hero.x,
+      GameConfig.hero.y,
+      GameConfig.hero.radius,
+      GameConfig.hero.speed,
+    );
+
+    const animals: Animal[] = [];
+
+    const yard = new Yard(
+      GameConfig.yard.x,
+      GameConfig.yard.y,
+      GameConfig.yard.width,
+      GameConfig.yard.height,
+    );
+
+    const score = new Score(0);
+
+    this.world = new GameWorld(hero, animals, yard, score);
+
+    this.soundSystem = new SoundSystem();
+
+    this.inputSystem = new InputSystem(this.world.hero);
+    this.movementSystem = new MovementSystem(this.world.hero);
+
+    this.followSystem = new FollowSystem(
+      this.world.hero,
+      this.world.animals,
+      () => this.soundSystem.playPickup(),
+    );
+
+    this.deliverySystem = new DeliverySystem(
+      this.world.animals,
+      this.world.yard,
+      this.world.score,
+      () => this.soundSystem.playDelivery(),
+    );
+
+    this.respawnSystem = new RespawnSystem(
+      this.world.animals,
+      (min, max) => this.randomInt(min, max),
+    );
+
+    this.spawnSystem = new SpawnSystem(
+      this.world.animals,
+      (min, max) => this.randomInt(min, max),
+      (min, max) => this.randomFloat(min, max),
+    );
+
+    this.patrolSystem = new PatrolSystem(
+      this.world.animals,
+      (min, max) => this.randomInt(min, max),
+      (min, max) => this.randomFloat(min, max),
+    );
+
     this.createAnimals();
+
     this.scene = new MainScene(
-      this.hero,
-      this.animals,
-      this.yard,
-      this.score,
+      this.world.hero,
+      this.world.animals,
+      this.world.yard,
+      this.world.score,
     );
   }
 
@@ -141,7 +157,7 @@ export class Game {
     );
 
     for (let i = 0; i < count; i++) {
-      this.animals.push(this.createAnimal());
+      this.world.animals.push(this.createAnimal());
     }
   }
 
