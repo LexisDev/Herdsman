@@ -1,4 +1,5 @@
 import { Container } from 'pixi.js';
+import type { IScene } from './IScene';
 import { FieldView } from '../ui/views/FieldView';
 import { TitleView } from '../ui/views/TitleView';
 import { LightningView } from '../ui/views/LightningView';
@@ -13,7 +14,7 @@ import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
 import { Score } from '../entities/Score';
 
-export class MainScene {
+export class MainScene implements IScene {
   public readonly root = new Container();
 
   private readonly fieldView: FieldView;
