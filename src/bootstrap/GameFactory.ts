@@ -19,6 +19,8 @@ import { EventBus } from '../events/EventBus';
 import { MainScene } from '../scene/MainScene';
 import { GameRuntime } from './GameRuntime';
 import { DeliveryService } from '../systems/services/DeliveryService';
+import { FollowService } from '../systems/services/FollowService';
+import { PatrolService } from '../systems/services/PatrolService';
 
 export class GameFactory {
   public create(): GameRuntime {
@@ -42,7 +44,12 @@ export class GameFactory {
     );
 
     const movementSystem = new MovementSystem(world);
-    const followSystem = new FollowSystem(world, eventBus);
+    const followService = new FollowService();
+    const followSystem = new FollowSystem(
+      world,
+      eventBus,
+      followService,
+    );
     const deliveryService = new DeliveryService();
     const deliverySystem = new DeliverySystem(
       world,
@@ -58,10 +65,13 @@ export class GameFactory {
       animalFactory,
       (min, max) => this.randomFloat(min, max),
     );
-    const patrolSystem = new PatrolSystem(
-      world,
+    const patrolService = new PatrolService(
       (min, max) => this.randomInt(min, max),
       (min, max) => this.randomFloat(min, max),
+    );
+    const patrolSystem = new PatrolSystem(
+      world,
+      patrolService,
     );
     const fpsSystem = new FpsSystem(world);
     const renderSystem = new RenderSystem(scene);
