@@ -1,16 +1,16 @@
 import type { Updatable } from '../core/GameLoop';
 import { GameConfig } from '../core/GameConfig';
-import { Animal } from '../entities/Animal';
+import { GameWorld } from '../world/GameWorld';
 
 export class PatrolSystem implements Updatable {
   constructor(
-    private readonly animals: Animal[],
+    private readonly world: GameWorld,
     private readonly randomInt: (min: number, max: number) => number,
     private readonly randomFloat: (min: number, max: number) => number,
   ) {}
 
   public update(deltaTime: number): void {
-    for (const animal of this.animals) {
+    for (const animal of this.world.animals) {
       if (animal.isDelivered || animal.isFollowing) {
         continue;
       }
@@ -28,14 +28,17 @@ export class PatrolSystem implements Updatable {
     }
   }
 
-  private assignNewPatrolTarget(animal: Animal): void {
+  private assignNewPatrolTarget(animal: GameWorld['animals'][number]): void {
     animal.setPatrolTarget(
       this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
       this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
     );
   }
 
-  private moveTowardsPatrolTarget(animal: Animal, deltaTime: number): void {
+  private moveTowardsPatrolTarget(
+    animal: GameWorld['animals'][number],
+    deltaTime: number,
+  ): void {
     if (animal.patrolTargetX === null || animal.patrolTargetY === null) {
       return;
     }

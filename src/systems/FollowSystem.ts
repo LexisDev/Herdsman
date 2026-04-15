@@ -1,12 +1,10 @@
 import type { Updatable } from '../core/GameLoop';
 import { GameConfig } from '../core/GameConfig';
-import { Hero } from '../entities/Hero';
-import { Animal } from '../entities/Animal';
+import { GameWorld } from '../world/GameWorld';
 
 export class FollowSystem implements Updatable {
   constructor(
-    private readonly hero: Hero,
-    private readonly animals: Animal[],
+    private readonly world: GameWorld,
     private readonly onAnimalPicked?: () => void,
   ) {}
 
@@ -22,13 +20,13 @@ export class FollowSystem implements Updatable {
       return;
     }
 
-    for (const animal of this.animals) {
+    for (const animal of this.world.animals) {
       if (animal.isDelivered || animal.isFollowing) {
         continue;
       }
 
-      const dx = this.hero.x - animal.x;
-      const dy = this.hero.y - animal.y;
+      const dx = this.world.hero.x - animal.x;
+      const dy = this.world.hero.y - animal.y;
       const distance = Math.hypot(dx, dy);
 
       if (distance <= GameConfig.animals.pickupDistance) {
@@ -50,15 +48,16 @@ export class FollowSystem implements Updatable {
     followers.forEach((animal, index) => {
       animal.followIndex = index;
 
-      const targetX = this.hero.x - (index + 1) * GameConfig.animals.followSpacing;
-      const targetY = this.hero.y;
+      const targetX =
+        this.world.hero.x - (index + 1) * GameConfig.animals.followSpacing;
+      const targetY = this.world.hero.y;
 
       this.moveAnimalTowards(animal, targetX, targetY, deltaTime);
     });
   }
 
   private moveAnimalTowards(
-    animal: Animal,
+    animal: (typeof this.world.animals)[number],
     targetX: number,
     targetY: number,
     deltaTime: number,
@@ -83,8 +82,8 @@ export class FollowSystem implements Updatable {
     animal.y += (dy / distance) * step;
   }
 
-  private getFollowers(): Animal[] {
-    return this.animals
+  private getFollowers() {
+    return this.world.animals
       .filter((animal) => animal.isFollowing && !animal.isDelivered)
       .sort((left, right) => left.followIndex - right.followIndex);
   }

@@ -1,12 +1,13 @@
 import type { Updatable } from '../core/GameLoop';
 import { GameConfig } from '../core/GameConfig';
 import { Animal } from '../entities/Animal';
+import { GameWorld } from '../world/GameWorld';
 
 export class SpawnSystem implements Updatable {
   private timeUntilNextSpawn = 0;
 
   constructor(
-    private readonly animals: Animal[],
+    private readonly world: GameWorld,
     private readonly randomInt: (min: number, max: number) => number,
     private readonly randomFloat: (min: number, max: number) => number,
   ) {
@@ -20,7 +21,9 @@ export class SpawnSystem implements Updatable {
       return;
     }
 
-    const aliveAnimalsCount = this.animals.filter((animal) => !animal.isDelivered).length;
+    const aliveAnimalsCount = this.world.animals.filter(
+      (animal) => !animal.isDelivered,
+    ).length;
 
     if (aliveAnimalsCount < GameConfig.animals.maxAliveOnField) {
       this.spawnAnimal();
@@ -37,9 +40,12 @@ export class SpawnSystem implements Updatable {
       GameConfig.animals.speed,
     );
 
-    animal.patrolWaitTime = this.randomFloat(2.4, 7.4);
+    animal.patrolWaitTime = this.randomFloat(
+      GameConfig.animals.spawnIdleMin,
+      GameConfig.animals.spawnIdleMax,
+    );
 
-    this.animals.push(animal);
+    this.world.animals.push(animal);
   }
 
   private scheduleNextSpawn(): void {

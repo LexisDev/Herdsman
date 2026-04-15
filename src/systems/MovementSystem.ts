@@ -1,27 +1,29 @@
 import type { Updatable } from '../core/GameLoop';
-import { Hero } from '../entities/Hero';
+import { GameWorld } from '../world/GameWorld';
 
 export class MovementSystem implements Updatable {
-  constructor(private readonly hero: Hero) {}
+  constructor(private readonly world: GameWorld) {}
 
   public update(deltaTime: number): void {
-    const dx = this.hero.targetX - this.hero.x;
-    const dy = this.hero.targetY - this.hero.y;
+    const hero = this.world.hero;
+
+    const dx = hero.targetX - hero.x;
+    const dy = hero.targetY - hero.y;
     const distance = Math.hypot(dx, dy);
 
     if (distance === 0) {
       return;
     }
 
-    const step = this.hero.speed * deltaTime;
+    const step = hero.speed * deltaTime;
 
     if (distance <= step) {
-      this.hero.x = this.hero.targetX;
-      this.hero.y = this.hero.targetY;
+      hero.x = hero.targetX;
+      hero.y = hero.targetY;
       return;
     }
 
-    this.hero.x += (dx / distance) * step;
-    this.hero.y += (dy / distance) * step;
+    hero.x += (dx / distance) * step;
+    hero.y += (dy / distance) * step;
   }
 }

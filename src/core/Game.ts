@@ -57,35 +57,32 @@ export class Game {
 
     this.soundSystem = new SoundSystem();
 
-    this.inputSystem = new InputSystem(this.world.hero);
-    this.movementSystem = new MovementSystem(this.world.hero);
+    this.inputSystem = new InputSystem(this.world);
+    this.movementSystem = new MovementSystem(this.world);
 
     this.followSystem = new FollowSystem(
-      this.world.hero,
-      this.world.animals,
+      this.world,
       () => this.soundSystem.playPickup(),
     );
 
     this.deliverySystem = new DeliverySystem(
-      this.world.animals,
-      this.world.yard,
-      this.world.score,
+      this.world,
       () => this.soundSystem.playDelivery(),
     );
 
     this.respawnSystem = new RespawnSystem(
-      this.world.animals,
+      this.world,
       (min, max) => this.randomInt(min, max),
     );
 
     this.spawnSystem = new SpawnSystem(
-      this.world.animals,
+      this.world,
       (min, max) => this.randomInt(min, max),
       (min, max) => this.randomFloat(min, max),
     );
 
     this.patrolSystem = new PatrolSystem(
-      this.world.animals,
+      this.world,
       (min, max) => this.randomInt(min, max),
       (min, max) => this.randomFloat(min, max),
     );

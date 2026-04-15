@@ -1,9 +1,9 @@
-import { Hero } from '../entities/Hero';
+import { GameWorld } from '../world/GameWorld';
 
 export class InputSystem {
-  constructor(private readonly hero: Hero) {}
+  constructor(private readonly world: GameWorld) {}
 
   public moveHeroTo(x: number, y: number): void {
-    this.hero.setTarget(x, y);
+    this.world.hero.setTarget(x, y);
   }
 }
