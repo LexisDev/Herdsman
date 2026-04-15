@@ -16,6 +16,7 @@ import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
 import { Score } from '../entities/Score';
 import { GameWorld } from '../world/GameWorld';
+import { AnimalFactory } from '../factories/AnimalFactory';
 
 export class Game {
   private readonly app = new Application();
@@ -26,6 +27,7 @@ export class Game {
   private readonly inputSystem: InputSystem;
   private readonly movementSystem: MovementSystem;
   private readonly soundSystem: SoundSystem;
+  private readonly animalFactory: AnimalFactory;
   private readonly followSystem: FollowSystem;
   private readonly deliverySystem: DeliverySystem;
   private readonly respawnSystem: RespawnSystem;
@@ -57,6 +59,11 @@ export class Game {
 
     this.soundSystem = new SoundSystem();
 
+    this.animalFactory = new AnimalFactory(
+      (min, max) => this.randomInt(min, max),
+      (min, max) => this.randomFloat(min, max),
+    );
+
     this.inputSystem = new InputSystem(this.world);
     this.movementSystem = new MovementSystem(this.world);
 
@@ -77,7 +84,7 @@ export class Game {
 
     this.spawnSystem = new SpawnSystem(
       this.world,
-      (min, max) => this.randomInt(min, max),
+      this.animalFactory,
       (min, max) => this.randomFloat(min, max),
     );
 
@@ -154,24 +161,8 @@ export class Game {
     );
 
     for (let i = 0; i < count; i++) {
-      this.world.animals.push(this.createAnimal());
+      this.world.animals.push(this.animalFactory.create());
     }
-  }
-
-  private createAnimal(): Animal {
-    const animal = new Animal(
-      this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
-      this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
-      GameConfig.animals.radius,
-      GameConfig.animals.speed,
-    );
-
-    animal.patrolWaitTime = this.randomFloat(
-      GameConfig.animals.spawnIdleMin,
-      GameConfig.animals.spawnIdleMax,
-    );
-
-    return animal;
   }
 
   private randomInt(min: number, max: number): number {

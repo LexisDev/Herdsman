@@ -1,6 +1,6 @@
 import type { Updatable } from '../core/GameLoop';
 import { GameConfig } from '../core/GameConfig';
-import { Animal } from '../entities/Animal';
+import { AnimalFactory } from '../factories/AnimalFactory';
 import { GameWorld } from '../world/GameWorld';
 
 export class SpawnSystem implements Updatable {
@@ -8,7 +8,7 @@ export class SpawnSystem implements Updatable {
 
   constructor(
     private readonly world: GameWorld,
-    private readonly randomInt: (min: number, max: number) => number,
+    private readonly animalFactory: AnimalFactory,
     private readonly randomFloat: (min: number, max: number) => number,
   ) {
     this.scheduleNextSpawn();
@@ -26,26 +26,10 @@ export class SpawnSystem implements Updatable {
     ).length;
 
     if (aliveAnimalsCount < GameConfig.animals.maxAliveOnField) {
-      this.spawnAnimal();
+      this.world.animals.push(this.animalFactory.create());
     }
 
     this.scheduleNextSpawn();
-  }
-
-  private spawnAnimal(): void {
-    const animal = new Animal(
-      this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
-      this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
-      GameConfig.animals.radius,
-      GameConfig.animals.speed,
-    );
-
-    animal.patrolWaitTime = this.randomFloat(
-      GameConfig.animals.spawnIdleMin,
-      GameConfig.animals.spawnIdleMax,
-    );
-
-    this.world.animals.push(animal);
   }
 
   private scheduleNextSpawn(): void {
