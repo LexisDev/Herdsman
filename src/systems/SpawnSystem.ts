@@ -22,7 +22,7 @@ export class SpawnSystem implements Updatable {
     }
 
     const aliveAnimalsCount = this.world.animals.filter(
-      (animal) => !animal.isDelivered,
+      (animal) => !animal.isDeliveredState(),
     ).length;
 
     if (aliveAnimalsCount < GameConfig.animals.maxAliveOnField) {

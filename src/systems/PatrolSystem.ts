@@ -1,6 +1,7 @@
 import type { Updatable } from '../core/GameLoop';
 import { GameConfig } from '../core/GameConfig';
 import { GameWorld } from '../world/GameWorld';
+import { Animal } from '../entities/Animal';
 
 export class PatrolSystem implements Updatable {
   constructor(
@@ -11,16 +12,16 @@ export class PatrolSystem implements Updatable {
 
   public update(deltaTime: number): void {
     for (const animal of this.world.animals) {
-      if (animal.isDelivered || animal.isFollowing) {
+      if (!animal.isPatrollingAvailable()) {
         continue;
       }
 
-      if (animal.patrolWaitTime > 0) {
-        animal.patrolWaitTime -= deltaTime;
+      if (animal.shouldWaitForPatrol()) {
+        animal.decreasePatrolWaitTime(deltaTime);
         continue;
       }
 
-      if (animal.patrolTargetX === null || animal.patrolTargetY === null) {
+      if (!animal.hasPatrolTarget()) {
         this.assignNewPatrolTarget(animal);
       }
 
@@ -28,7 +29,7 @@ export class PatrolSystem implements Updatable {
     }
   }
 
-  private assignNewPatrolTarget(animal: GameWorld['animals'][number]): void {
+  private assignNewPatrolTarget(animal: Animal): void {
     animal.setPatrolTarget(
       this.randomInt(GameConfig.animals.minX, GameConfig.animals.maxX),
       this.randomInt(GameConfig.animals.minY, GameConfig.animals.maxY),
@@ -36,41 +37,39 @@ export class PatrolSystem implements Updatable {
   }
 
   private moveTowardsPatrolTarget(
-    animal: GameWorld['animals'][number],
+    animal: Animal,
     deltaTime: number,
   ): void {
-    if (animal.patrolTargetX === null || animal.patrolTargetY === null) {
+    const target = animal.getPatrolTarget();
+
+    if (!target) {
       return;
     }
 
-    const dx = animal.patrolTargetX - animal.x;
-    const dy = animal.patrolTargetY - animal.y;
-    const distance = Math.hypot(dx, dy);
+    const distance = animal.distanceTo(target.x, target.y);
 
     if (distance === 0) {
-      animal.clearPatrolTarget();
-      animal.patrolWaitTime = this.randomFloat(
-        GameConfig.animals.patrolWaitMin,
-        GameConfig.animals.patrolWaitMax,
-      );
+      this.finishPatrol(animal);
       return;
     }
 
     const step =
-      animal.speed * GameConfig.animals.patrolSpeedMultiplier * deltaTime;
+      animal.getSpeed() * GameConfig.animals.patrolSpeedMultiplier * deltaTime;
 
-    if (distance <= step) {
-      animal.x = animal.patrolTargetX;
-      animal.y = animal.patrolTargetY;
-      animal.clearPatrolTarget();
-      animal.patrolWaitTime = this.randomFloat(
+    animal.moveTowards(target.x, target.y, step);
+
+    if (animal.distanceTo(target.x, target.y) === 0) {
+      this.finishPatrol(animal);
+    }
+  }
+
+  private finishPatrol(animal: Animal): void {
+    animal.clearPatrolTarget();
+    animal.setPatrolWaitTime(
+      this.randomFloat(
         GameConfig.animals.patrolWaitMin,
         GameConfig.animals.patrolWaitMax,
-      );
-      return;
-    }
-
-    animal.x += (dx / distance) * step;
-    animal.y += (dy / distance) * step;
+      ),
+    );
   }
 }

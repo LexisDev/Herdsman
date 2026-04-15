@@ -13,7 +13,9 @@ export class RespawnSystem implements Updatable {
       return;
     }
 
-    const allDelivered = this.world.animals.every((animal) => animal.isDelivered);
+    const allDelivered = this.world.animals.every((animal) =>
+      animal.isDeliveredState(),
+    );
 
     if (!allDelivered) {
       return;

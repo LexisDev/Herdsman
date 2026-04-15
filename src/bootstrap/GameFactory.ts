@@ -18,6 +18,7 @@ import { AnimalFactory } from '../factories/AnimalFactory';
 import { EventBus } from '../events/EventBus';
 import { MainScene } from '../scene/MainScene';
 import { GameRuntime } from './GameRuntime';
+import { DeliveryService } from '../systems/services/DeliveryService';
 
 export class GameFactory {
   public create(): GameRuntime {
@@ -42,7 +43,12 @@ export class GameFactory {
 
     const movementSystem = new MovementSystem(world);
     const followSystem = new FollowSystem(world, eventBus);
-    const deliverySystem = new DeliverySystem(world, eventBus);
+    const deliveryService = new DeliveryService();
+    const deliverySystem = new DeliverySystem(
+      world,
+      eventBus,
+      deliveryService,
+    );
     const respawnSystem = new RespawnSystem(
       world,
       (min, max) => this.randomInt(min, max),

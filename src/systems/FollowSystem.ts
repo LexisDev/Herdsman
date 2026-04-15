@@ -3,6 +3,7 @@ import { GameConfig } from '../core/GameConfig';
 import { EventBus } from '../events/EventBus';
 import { GameEvents } from '../events/GameEvents';
 import { GameWorld } from '../world/GameWorld';
+import { Animal } from '../entities/Animal';
 
 export class FollowSystem implements Updatable {
   constructor(
@@ -23,24 +24,24 @@ export class FollowSystem implements Updatable {
     }
 
     for (const animal of this.world.animals) {
-      if (animal.isDelivered || animal.isFollowing) {
+      if (!animal.isAvailableForPickup()) {
         continue;
       }
 
-      const dx = this.world.hero.x - animal.x;
-      const dy = this.world.hero.y - animal.y;
-      const distance = Math.hypot(dx, dy);
+      const distance = animal.distanceTo(this.world.hero.x, this.world.hero.y);
 
-      if (distance <= GameConfig.animals.pickupDistance) {
-        const currentFollowers = this.getFollowers();
-
-        if (currentFollowers.length >= GameConfig.animals.maxGroupSize) {
-          return;
-        }
-
-        animal.startFollowing(currentFollowers.length);
-        this.eventBus.emit(GameEvents.AnimalPicked, { animal });
+      if (distance > GameConfig.animals.pickupDistance) {
+        continue;
       }
+
+      const currentFollowers = this.getFollowers();
+
+      if (currentFollowers.length >= GameConfig.animals.maxGroupSize) {
+        return;
+      }
+
+      animal.startFollowing(currentFollowers.length);
+      this.eventBus.emit(GameEvents.AnimalPicked, { animal });
     }
   }
 
@@ -48,7 +49,7 @@ export class FollowSystem implements Updatable {
     const followers = this.getFollowers();
 
     followers.forEach((animal, index) => {
-      animal.followIndex = index;
+      animal.setFollowIndex(index);
 
       const targetX =
         this.world.hero.x - (index + 1) * GameConfig.animals.followSpacing;
@@ -59,34 +60,20 @@ export class FollowSystem implements Updatable {
   }
 
   private moveAnimalTowards(
-    animal: GameWorld['animals'][number],
+    animal: Animal,
     targetX: number,
     targetY: number,
     deltaTime: number,
   ): void {
-    const dx = targetX - animal.x;
-    const dy = targetY - animal.y;
-    const distance = Math.hypot(dx, dy);
-
-    if (distance === 0) {
-      return;
-    }
-
-    const step = animal.speed * deltaTime;
-
-    if (distance <= step) {
-      animal.x = targetX;
-      animal.y = targetY;
-      return;
-    }
-
-    animal.x += (dx / distance) * step;
-    animal.y += (dy / distance) * step;
+    const step = animal.getSpeed() * deltaTime;
+    animal.moveTowards(targetX, targetY, step);
   }
 
-  private getFollowers() {
+  private getFollowers(): Animal[] {
     return this.world.animals
-      .filter((animal) => animal.isFollowing && !animal.isDelivered)
-      .sort((left, right) => left.followIndex - right.followIndex);
+      .filter((animal) => animal.isActiveFollower())
+      .sort(
+        (left, right) => left.getFollowIndex() - right.getFollowIndex(),
+      );
   }
 }

@@ -137,13 +137,14 @@ export class MainScene implements IScene {
       const animal = this.animals[index];
       const animalView = this.animalViews[index];
 
-      animalView.visible = !animal.isDelivered;
+      animalView.visible = !animal.isDeliveredState();
 
-      if (animal.isDelivered) {
+      if (animal.isDeliveredState()) {
         continue;
       }
 
-      animalView.syncPosition(animal.x, animal.y);
+      const position = animal.getPosition();
+      animalView.syncPosition(position.x, position.y);
     }
   }
 
