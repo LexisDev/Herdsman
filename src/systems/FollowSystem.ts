@@ -1,11 +1,13 @@
 import type { Updatable } from '../core/GameLoop';
 import { GameConfig } from '../core/GameConfig';
+import { EventBus } from '../events/EventBus';
+import { GameEvents } from '../events/GameEvents';
 import { GameWorld } from '../world/GameWorld';
 
 export class FollowSystem implements Updatable {
   constructor(
     private readonly world: GameWorld,
-    private readonly onAnimalPicked?: () => void,
+    private readonly eventBus: EventBus,
   ) {}
 
   public update(deltaTime: number): void {
@@ -37,7 +39,7 @@ export class FollowSystem implements Updatable {
         }
 
         animal.startFollowing(currentFollowers.length);
-        this.onAnimalPicked?.();
+        this.eventBus.emit(GameEvents.AnimalPicked, { animal });
       }
     }
   }
@@ -57,7 +59,7 @@ export class FollowSystem implements Updatable {
   }
 
   private moveAnimalTowards(
-    animal: (typeof this.world.animals)[number],
+    animal: GameWorld['animals'][number],
     targetX: number,
     targetY: number,
     deltaTime: number,

@@ -1,8 +1,11 @@
+import { EventBus } from '../events/EventBus';
+import { GameEvents } from '../events/GameEvents';
+
 export class SoundSystem {
   private readonly pickupSound: HTMLAudioElement;
   private readonly deliverySound: HTMLAudioElement;
 
-  constructor() {
+  constructor(private readonly eventBus: EventBus) {
     this.pickupSound = new Audio('/assets/sounds/pickup.mp3');
     this.pickupSound.preload = 'auto';
     this.pickupSound.volume = 0.5;
@@ -12,11 +15,21 @@ export class SoundSystem {
     this.deliverySound.volume = 0.55;
   }
 
-  public playPickup(): void {
+  public register(): void {
+    this.eventBus.on(GameEvents.AnimalPicked, () => {
+      this.playPickup();
+    });
+
+    this.eventBus.on(GameEvents.AnimalDelivered, () => {
+      this.playDelivery();
+    });
+  }
+
+  private playPickup(): void {
     this.play(this.pickupSound);
   }
 
-  public playDelivery(): void {
+  private playDelivery(): void {
     this.play(this.deliverySound);
   }
 

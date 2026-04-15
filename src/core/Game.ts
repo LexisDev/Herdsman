@@ -17,17 +17,19 @@ import { Yard } from '../entities/Yard';
 import { Score } from '../entities/Score';
 import { GameWorld } from '../world/GameWorld';
 import { AnimalFactory } from '../factories/AnimalFactory';
+import { EventBus } from '../events/EventBus';
 
 export class Game {
   private readonly app = new Application();
   private readonly loop = new GameLoop();
 
   private readonly world: GameWorld;
+  private readonly animalFactory: AnimalFactory;
+  private readonly eventBus: EventBus;
 
   private readonly inputSystem: InputSystem;
   private readonly movementSystem: MovementSystem;
   private readonly soundSystem: SoundSystem;
-  private readonly animalFactory: AnimalFactory;
   private readonly followSystem: FollowSystem;
   private readonly deliverySystem: DeliverySystem;
   private readonly respawnSystem: RespawnSystem;
@@ -56,9 +58,9 @@ export class Game {
     const score = new Score(0);
 
     this.world = new GameWorld(hero, animals, yard, score);
+    this.eventBus = new EventBus();
 
-    this.soundSystem = new SoundSystem();
-
+    this.soundSystem = new SoundSystem(this.eventBus);
     this.animalFactory = new AnimalFactory(
       (min, max) => this.randomInt(min, max),
       (min, max) => this.randomFloat(min, max),
@@ -69,12 +71,12 @@ export class Game {
 
     this.followSystem = new FollowSystem(
       this.world,
-      () => this.soundSystem.playPickup(),
+      this.eventBus,
     );
 
     this.deliverySystem = new DeliverySystem(
       this.world,
-      () => this.soundSystem.playDelivery(),
+      this.eventBus,
     );
 
     this.respawnSystem = new RespawnSystem(
@@ -113,6 +115,8 @@ export class Game {
 
     this.rootElement.appendChild(this.app.canvas);
     this.app.stage.addChild(this.scene.root);
+
+    this.soundSystem.register();
 
     this.handleResize();
     window.addEventListener('resize', this.handleResize);

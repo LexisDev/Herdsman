@@ -1,15 +1,15 @@
 import type { Updatable } from '../core/GameLoop';
+import { EventBus } from '../events/EventBus';
+import { GameEvents } from '../events/GameEvents';
 import { GameWorld } from '../world/GameWorld';
 
 export class DeliverySystem implements Updatable {
   constructor(
     private readonly world: GameWorld,
-    private readonly onAnimalDelivered?: () => void,
+    private readonly eventBus: EventBus,
   ) {}
 
   public update(_deltaTime: number): void {
-    let deliveredCount = 0;
-
     for (const animal of this.world.animals) {
       if (!animal.isFollowing || animal.isDelivered) {
         continue;
@@ -18,13 +18,7 @@ export class DeliverySystem implements Updatable {
       if (this.world.yard.contains(animal.x, animal.y)) {
         animal.markDelivered();
         this.world.score.increment();
-        deliveredCount += 1;
-      }
-    }
-
-    if (deliveredCount > 0) {
-      for (let index = 0; index < deliveredCount; index += 1) {
-        this.onAnimalDelivered?.();
+        this.eventBus.emit(GameEvents.AnimalDelivered, { animal });
       }
     }
 
