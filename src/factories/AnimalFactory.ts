@@ -15,9 +15,11 @@ export class AnimalFactory {
       GameConfig.animals.speed,
     );
 
-    animal.patrolWaitTime = this.randomFloat(
-      GameConfig.animals.spawnIdleMin,
-      GameConfig.animals.spawnIdleMax,
+    animal.setPatrolWaitTime(
+      this.randomFloat(
+        GameConfig.animals.spawnIdleMin,
+        GameConfig.animals.spawnIdleMax,
+      ),
     );
 
     return animal;

@@ -23,12 +23,14 @@ export class FollowSystem implements Updatable {
       return;
     }
 
+    const heroPosition = this.world.hero.getPosition();
+
     for (const animal of this.world.animals) {
       if (!animal.isAvailableForPickup()) {
         continue;
       }
 
-      const distance = animal.distanceTo(this.world.hero.x, this.world.hero.y);
+      const distance = animal.distanceTo(heroPosition.x, heroPosition.y);
 
       if (distance > GameConfig.animals.pickupDistance) {
         continue;
@@ -47,13 +49,14 @@ export class FollowSystem implements Updatable {
 
   private updateFollowers(deltaTime: number): void {
     const followers = this.getFollowers();
+    const heroPosition = this.world.hero.getPosition();
 
     followers.forEach((animal, index) => {
       animal.setFollowIndex(index);
 
       const targetX =
-        this.world.hero.x - (index + 1) * GameConfig.animals.followSpacing;
-      const targetY = this.world.hero.y;
+        heroPosition.x - (index + 1) * GameConfig.animals.followSpacing;
+      const targetY = heroPosition.y;
 
       this.moveAnimalTowards(animal, targetX, targetY, deltaTime);
     });

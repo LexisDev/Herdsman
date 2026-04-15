@@ -129,7 +129,8 @@ export class MainScene implements IScene {
   }
 
   private syncHero(): void {
-    this.heroView.syncPosition(this.hero.x, this.hero.y);
+    const position = this.hero.getPosition();
+    this.heroView.syncPosition(position.x, position.y);
   }
 
   private syncAnimals(): void {
