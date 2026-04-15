@@ -21,6 +21,9 @@ import { GameRuntime } from './GameRuntime';
 import { DeliveryService } from '../systems/services/DeliveryService';
 import { FollowService } from '../systems/services/FollowService';
 import { PatrolService } from '../systems/services/PatrolService';
+import { IFollowService } from '../contracts/IFollowService';
+import { IPatrolService } from '../contracts/IPatrolService';
+import { IDeliveryService } from '../contracts/IDeliveryService';
 
 export class GameFactory {
   public create(): GameRuntime {
@@ -44,13 +47,13 @@ export class GameFactory {
     );
 
     const movementSystem = new MovementSystem(world);
-    const followService = new FollowService();
+    const followService: IFollowService = new FollowService();
     const followSystem = new FollowSystem(
       world,
       eventBus,
       followService,
     );
-    const deliveryService = new DeliveryService();
+    const deliveryService: IDeliveryService = new DeliveryService();
     const deliverySystem = new DeliverySystem(
       world,
       eventBus,
@@ -65,7 +68,7 @@ export class GameFactory {
       animalFactory,
       (min, max) => this.randomFloat(min, max),
     );
-    const patrolService = new PatrolService(
+    const patrolService: IPatrolService = new PatrolService(
       (min, max) => this.randomInt(min, max),
       (min, max) => this.randomFloat(min, max),
     );

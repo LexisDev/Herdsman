@@ -1,8 +1,9 @@
 import { Animal } from '../../entities/Animal';
 import { Yard } from '../../entities/Yard';
 import { Score } from '../../entities/Score';
+import { IDeliveryService } from '../../contracts/IDeliveryService';
 
-export class DeliveryService {
+export class DeliveryService implements IDeliveryService {
   public deliver(animals: Animal[], yard: Yard, score: Score): Animal[] {
     const deliveredAnimals: Animal[] = [];
 

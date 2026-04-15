@@ -2,13 +2,14 @@ import type { Updatable } from '../core/GameLoop';
 import { EventBus } from '../events/EventBus';
 import { GameEvents } from '../events/GameEvents';
 import { GameWorld } from '../world/GameWorld';
-import { DeliveryService } from './services/DeliveryService';
+import { IDeliveryService } from '../contracts/IDeliveryService';
 
 export class DeliverySystem implements Updatable {
   constructor(
     private readonly world: GameWorld,
     private readonly eventBus: EventBus,
-    private readonly deliveryService: DeliveryService,
+    private readonly deliveryService: IDeliveryService,
+    
   ) {}
 
   public update(_deltaTime: number): void {

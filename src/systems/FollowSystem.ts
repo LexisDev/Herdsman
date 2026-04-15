@@ -2,13 +2,13 @@ import type { Updatable } from '../core/GameLoop';
 import { EventBus } from '../events/EventBus';
 import { GameEvents } from '../events/GameEvents';
 import { GameWorld } from '../world/GameWorld';
-import { FollowService } from './services/FollowService';
+import { IFollowService } from '../contracts/IFollowService';
 
 export class FollowSystem implements Updatable {
   constructor(
     private readonly world: GameWorld,
     private readonly eventBus: EventBus,
-    private readonly followService: FollowService,
+    private readonly followService: IFollowService,
   ) {}
 
   public update(deltaTime: number): void {

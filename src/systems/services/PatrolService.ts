@@ -1,7 +1,8 @@
 import { GameConfig } from '../../core/GameConfig';
 import { Animal } from '../../entities/Animal';
+import { IPatrolService } from '../../contracts/IPatrolService';
 
-export class PatrolService {
+export class PatrolService implements IPatrolService {
   constructor(
     private readonly randomInt: (min: number, max: number) => number,
     private readonly randomFloat: (min: number, max: number) => number,

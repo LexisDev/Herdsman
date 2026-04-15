@@ -1,8 +1,9 @@
 import { GameConfig } from '../../core/GameConfig';
 import { Animal } from '../../entities/Animal';
 import { Hero } from '../../entities/Hero';
+import { IFollowService } from '../../contracts/IFollowService';
 
-export class FollowService {
+export class FollowService implements IFollowService {
   public tryPickAnimals(
     animals: Animal[],
     hero: Hero,
