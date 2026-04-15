@@ -7,10 +7,12 @@ import { RespawnSystem } from '../systems/RespawnSystem';
 import { SpawnSystem } from '../systems/SpawnSystem';
 import { PatrolSystem } from '../systems/PatrolSystem';
 import { SoundSystem } from '../systems/SoundSystem';
+import { FpsSystem } from '../systems/FpsSystem';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
 import { Score } from '../entities/Score';
+import { Fps } from '../entities/Fps';
 import { GameWorld } from '../world/GameWorld';
 import { AnimalFactory } from '../factories/AnimalFactory';
 import { EventBus } from '../events/EventBus';
@@ -35,6 +37,7 @@ export class GameFactory {
       world.animals,
       world.yard,
       world.score,
+      world.fps,
     );
 
     const movementSystem = new MovementSystem(world);
@@ -54,6 +57,7 @@ export class GameFactory {
       (min, max) => this.randomInt(min, max),
       (min, max) => this.randomFloat(min, max),
     );
+    const fpsSystem = new FpsSystem(world);
     const renderSystem = new RenderSystem(scene);
 
     return new GameRuntime(
@@ -67,6 +71,7 @@ export class GameFactory {
         deliverySystem,
         respawnSystem,
         spawnSystem,
+        fpsSystem,
         renderSystem,
       ],
     );
@@ -90,8 +95,9 @@ export class GameFactory {
     );
 
     const score = new Score(0);
+    const fps = new Fps(0);
 
-    return new GameWorld(hero, animals, yard, score);
+    return new GameWorld(hero, animals, yard, score, fps);
   }
 
   private createInitialAnimals(

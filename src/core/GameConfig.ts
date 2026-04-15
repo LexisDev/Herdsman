@@ -61,4 +61,14 @@ export const GameConfig = {
     height: 80,
     color: 0xffd60a,
   },
+
+  fps: {
+    xOffset: 20,
+    y: 20,
+    style: {
+      fill: 0xffffff,
+      fontSize: 24,
+      fontWeight: 'bold',
+    },
+  },  
 } as const;

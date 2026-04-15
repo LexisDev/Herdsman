@@ -7,12 +7,14 @@ import { HeroView } from '../ui/views/HeroView';
 import { AnimalView } from '../ui/views/AnimalView';
 import { YardView } from '../ui/views/YardView';
 import { ScoreView } from '../ui/hud/ScoreView';
+import { FpsView } from '../ui/hud/FpsView';
 
 import { GameConfig } from '../core/GameConfig';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
 import { Yard } from '../entities/Yard';
 import { Score } from '../entities/Score';
+import { Fps } from '../entities/Fps';
 
 export class MainScene implements IScene {
   public readonly root = new Container();
@@ -23,6 +25,7 @@ export class MainScene implements IScene {
   private readonly heroView: HeroView;
   private readonly yardView: YardView;
   private readonly scoreView: ScoreView;
+  private readonly fpsView: FpsView;
   private readonly animalViews: AnimalView[] = [];
 
   constructor(
@@ -30,6 +33,7 @@ export class MainScene implements IScene {
     private readonly animals: Animal[],
     private readonly yard: Yard,
     private readonly score: Score,
+    private readonly fps: Fps,
   ) {
     this.fieldView = new FieldView();
     this.titleView = new TitleView(
@@ -43,6 +47,7 @@ export class MainScene implements IScene {
     );
     this.yardView = new YardView();
     this.scoreView = new ScoreView(GameConfig.score.style);
+    this.fpsView = new FpsView(GameConfig.fps.style);
 
     this.buildScene();
     this.createMissingAnimalViews();
@@ -53,6 +58,7 @@ export class MainScene implements IScene {
     this.resizeField(width, height);
     this.layoutTitle(width);
     this.layoutScore();
+    this.layoutFps(width);
   }
 
   public render(): void {
@@ -60,6 +66,7 @@ export class MainScene implements IScene {
     this.syncHero();
     this.syncAnimals();
     this.syncScore();
+    this.syncFps();
   }
 
   public update(deltaTime: number): void {
@@ -73,6 +80,7 @@ export class MainScene implements IScene {
     this.root.addChild(this.heroView);
     this.root.addChild(this.titleView);
     this.root.addChild(this.scoreView);
+    this.root.addChild(this.fpsView);
   }
 
   private createMissingAnimalViews(): void {
@@ -113,6 +121,13 @@ export class MainScene implements IScene {
     );
   }
 
+  private layoutFps(width: number): void {
+    this.fpsView.setPosition(
+      width - GameConfig.fps.xOffset,
+      GameConfig.fps.y,
+    );
+  }
+
   private syncHero(): void {
     this.heroView.syncPosition(this.hero.x, this.hero.y);
   }
@@ -134,5 +149,9 @@ export class MainScene implements IScene {
 
   private syncScore(): void {
     this.scoreView.syncScore(this.score.value);
+  }
+
+  private syncFps(): void {
+    this.fpsView.syncValue(this.fps.value);
   }
 }
