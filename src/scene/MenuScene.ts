@@ -3,7 +3,6 @@ import type { IScene } from './IScene';
 
 export class MenuScene implements IScene {
   public readonly root = new Container();
-
   private readonly background = new Graphics();
   private readonly button = new Graphics();
   private readonly buttonLabel = new Text({
@@ -15,7 +14,6 @@ export class MenuScene implements IScene {
     },
   });
   private readonly logo: Sprite;
-
   private screenWidth = 0;
   private screenHeight = 0;
 

@@ -30,12 +30,10 @@ export class GameFactory {
     const world = this.createWorld();
     const eventBus = new EventBus();
     const soundSystem = new SoundSystem(eventBus);
-
     const animalFactory = new AnimalFactory(
       (min, max) => this.randomInt(min, max),
       (min, max) => this.randomFloat(min, max),
     );
-
     this.createInitialAnimals(world, animalFactory);
 
     const scene = new MainScene(
@@ -48,17 +46,9 @@ export class GameFactory {
 
     const movementSystem = new MovementSystem(world);
     const followService: IFollowService = new FollowService();
-    const followSystem = new FollowSystem(
-      world,
-      eventBus,
-      followService,
-    );
+    const followSystem = new FollowSystem(world, eventBus, followService);
     const deliveryService: IDeliveryService = new DeliveryService();
-    const deliverySystem = new DeliverySystem(
-      world,
-      eventBus,
-      deliveryService,
-    );
+    const deliverySystem = new DeliverySystem(world, eventBus, deliveryService);
     const respawnSystem = new RespawnSystem(
       world,
       (min, max) => this.randomInt(min, max),
@@ -103,19 +93,15 @@ export class GameFactory {
       GameConfig.hero.radius,
       GameConfig.hero.speed,
     );
-
     const animals: Animal[] = [];
-
     const yard = new Yard(
       GameConfig.yard.x,
       GameConfig.yard.y,
       GameConfig.yard.width,
       GameConfig.yard.height,
     );
-
     const score = new Score(0);
     const fps = new Fps(0);
-
     return new GameWorld(hero, animals, yard, score, fps);
   }
 
@@ -127,8 +113,7 @@ export class GameFactory {
       GameConfig.animals.minCount,
       GameConfig.animals.maxCount,
     );
-
-    for (let index = 0; index < count; index += 1) {
+    for (let index = 0; index < count; index++) {
       world.animals.push(animalFactory.create());
     }
   }

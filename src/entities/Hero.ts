@@ -3,7 +3,6 @@ export class Hero {
   private y: number;
   private readonly radius: number;
   private readonly speed: number;
-
   private targetX: number;
   private targetY: number;
 

@@ -8,7 +8,6 @@ import { AnimalView } from '../ui/views/AnimalView';
 import { YardView } from '../ui/views/YardView';
 import { ScoreView } from '../ui/hud/ScoreView';
 import { FpsView } from '../ui/hud/FpsView';
-
 import { GameConfig } from '../core/GameConfig';
 import { Hero } from '../entities/Hero';
 import { Animal } from '../entities/Animal';
@@ -18,7 +17,6 @@ import { Fps } from '../entities/Fps';
 
 export class MainScene implements IScene {
   public readonly root = new Container();
-
   private readonly fieldView: FieldView;
   private readonly titleView: TitleView;
   private readonly lightningView: LightningView;
@@ -134,7 +132,7 @@ export class MainScene implements IScene {
   }
 
   private syncAnimals(): void {
-    for (let index = 0; index < this.animals.length; index += 1) {
+    for (let index = 0; index < this.animals.length; index++) {
       const animal = this.animals[index];
       const animalView = this.animalViews[index];
 

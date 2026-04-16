@@ -11,7 +11,6 @@ export class Game {
   private readonly loop = new GameLoop();
   private readonly runtime = new GameFactory().create();
   private readonly inputSystem = new InputSystem(this.runtime.world);
-
   private currentScene!: IScene;
   private isGameStarted = false;
   private isInputBound = false;
@@ -24,22 +23,16 @@ export class Game {
       background: GameConfig.backgroundColor,
       antialias: true,
     });
-
     const logoTexture = await Assets.load<Texture>('/assets/logo.svg');
-
     this.currentScene = new MenuScene(
       logoTexture,
       () => this.startGame(),
     );
-
     this.rootElement.appendChild(this.app.canvas);
     this.app.stage.addChild(this.currentScene.root);
-
     this.runtime.soundSystem.register();
-
     this.handleResize();
     window.addEventListener('resize', this.handleResize);
-
     this.registerSystems();
     this.startLoop();
   }
@@ -48,13 +41,10 @@ export class Game {
     if (this.isGameStarted) {
       return;
     }
-
     this.isGameStarted = true;
-
     this.app.stage.removeChild(this.currentScene.root);
     this.currentScene = this.runtime.scene;
     this.app.stage.addChild(this.currentScene.root);
-
     this.handleResize();
     this.bindInput();
   }
@@ -70,12 +60,10 @@ export class Game {
 
     this.isInputBound = true;
     this.app.stage.eventMode = 'static';
-
     this.app.stage.on('pointerdown', (event) => {
       if (!this.isGameStarted) {
         return;
       }
-
       const position = event.getLocalPosition(this.app.stage);
       this.inputSystem.moveHeroTo(position.x, position.y);
     });

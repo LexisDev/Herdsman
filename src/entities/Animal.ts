@@ -2,12 +2,10 @@ export class Animal {
   private isFollowing = false;
   private isDelivered = false;
   private followIndex = -1;
-
   private x: number;
   private y: number;
   private readonly radius: number;
   private readonly speed: number;
-
   private patrolTargetX: number | null = null;
   private patrolTargetY: number | null = null;
   private patrolWaitTime = 0;
